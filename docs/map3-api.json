@@ -1,294 +1,517 @@
-openapi: 3.0.0
-info:
-  description: |
-    This is the Map3 Assets API Specification
-    [http://swagger.io](http://swagger.io) or on 
-    [irc.freenode.net, #swagger](http://swagger.io/irc/).
-  version: 1.0.0-oas3
-  title: Map3 Assets API
-  termsOfService: https://map3.xyz/api/
-  contact:
-    email: arshad@map3.xyz
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-tags:
-  - name: map3
-    description: Map3 Assets
-externalDocs:
-  description: Find out more about Map3
-  url: https://map3.xyz
-servers:
-  - url: https://api.map3.xyz/v1
-paths:
-  /dbversion:
-    get:
-      summary: Get available database version.
-      parameters:
-        - in: query
-          name: since
-          schema:
-            type: string
-          required: false
-          description: Get database versions since this version.
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    version:
-                      type: string
-                    created_date:
-                      type: string
-        '401':
-          description: Unauthorized
-      security:
-        - map3_auth:
-            - asset-read
-  /network:
-    get:
-      summary: Get the details of all networks supported by Map3
-      responses:
-        '200':
-          description: The details of all supported networks
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NetworkInfo'
-        '401':
-          description: Permission denied
-      security:
-        - map3_auth:
-            - asset-read
-    put:
-      summary: Create a new network
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NetworkInfo'
-      responses:
-        '200':
-          description: The details of all supported networks
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NetworkInfo'
-        '401':
-          description: Permission denied
-      security:
-        - map3_auth:
-            - asset-write
-  /network/{networkId}:
-    get:
-      summary: Get the details of a specific network
-      parameters: 
-        - in: path
-          name: networkId
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: The network asset details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NetworkInfo'
-        '401':
-          description: Permission denied
-      security:
-        - map3_auth:
-            - asset-read
-    put:
-      summary: Create a new asset within the given network
-      parameters: 
-        - in: path
-          name: networkId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AssetInfo'
-      responses:
-        '200':
-          description: The asset was successfully created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AssetInfo'
-        '401':
-          description: Permission denied
-      security:
-        - map3_auth:
-            - asset-write
-            
-  /network/{networkId}/{address}:
-    get:
-      summary: Get the details of a specific asset on a network.
-      parameters: 
-        - in: path
-          name: networkId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: address
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: The asset details on the given network
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AssetInfo'
-        '401':
-          description: Permission denied
-      security:
-        - map3_auth:
-            - asset-read
-            
-components:
-  securitySchemes:
-    map3_auth:
-      type: oauth2
-      flows:
-          authorizationCode:
-            authorizationUrl: https://api.map3.xyz/oauth/authorize
-            tokenUrl: https://api.map3.xyz/oauth/token
-            scopes:
-              asset-read: Grants read access to assets
-              asset-write: Grants write access to assets
-              asset-admin: Grants admin access
-  schemas:
-    BaseAssetInfo:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-            - network
-            - asset
-        networkId:
-          type: string
-        active:
-          type: boolean
-        color:
-          type: string
-        decimals: 
-          type: number
-        description:
-          type: array
-          items:
-            $ref: '#/components/schemas/Description'
-        links: 
-          type: array
-          items:
-            $ref: '#/components/schemas/Link'
-        logos: 
-          type: array
-          items:
-            $ref: '#/components/schemas/Logo'
-        name: 
-          type: string
-        spam: 
-          type: boolean
-        symbol: 
-          type: string
-        tags: 
-          type: array
-          items:
-            $ref: '#/components/schemas/TagName'
-        verifications: 
-          type: array
-          items:
-            type: array
-            items:
-              $ref: '#/components/schemas/Verification'
-        version: 
-          type: string
-    Description:
-      type: object
-      properties:
-        locale: 
-          type: string
-          enum: [en,es,fr,de,it,ja,ko,pt,ru,zh]
-        value: 
-          type: string
-        verified: 
-          type: boolean
-    Link:
-      type: object
-      properties:
-        type:
-          type: string
-          enum: [explorer,research,website,github,medium,twitter,reddit,whitepaper]
-        url:
-          type: string
-    Logo:
-      type: object
-      properties:
-        format:
-          type: string
-          enum: [svg,png]
-        url:
-          type: string
-    TagName:
-      type: string
-      enum: [stablecoin,staking,wrapped,leveraged,bull,bear]
-    Verification:
-      type: object
-      properties:
-        verified: 
-          type: boolean
-        type: 
-          type: string
-        timestamp:
-          type: string
-        proof: 
-          $ref: '#/components/schemas/VerificationProof'
-    VerificationProof:
-      type: object
-      properties:
-        signature:
-          type: string
-        assertion:
-          type: string
-    NetworkInfo:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-            - network
-        networkId:
-          type: string
-    AssetInfo:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-            - asset
-        networkId:
-          type: string
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Map3 Assets API",
+    "description": "This is the Map3 Assets API Specification\n[http://swagger.io](http://swagger.io) or on \n[irc.freenode.net, #swagger](http://swagger.io/irc/).\n",
+    "termsOfService": "https://map3.xyz/api/",
+    "contact": {
+      "email": "arshad@map3.xyz"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0-oas3"
+  },
+  "externalDocs": {
+    "description": "Find out more about Map3",
+    "url": "https://map3.xyz"
+  },
+  "servers": [
+    {
+      "url": "https://api.map3.xyz/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "map3",
+      "description": "Map3 Assets"
+    }
+  ],
+  "paths": {
+    "/dbversion": {
+      "get": {
+        "summary": "Get available database version.",
+        "parameters": [
+          {
+            "name": "since",
+            "in": "query",
+            "description": "Get database versions since this version (optional).",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/inline_response_200"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "map3_auth": [
+              "asset-read"
+            ]
+          }
+        ]
+      }
+    },
+    "/network": {
+      "get": {
+        "summary": "Get the details of all networks supported by Map3",
+        "responses": {
+          "200": {
+            "description": "The details of all supported networks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Network"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Permission denied"
+          }
+        },
+        "security": [
+          {
+            "map3_auth": [
+              "asset-read"
+            ]
+          }
+        ]
+      }
+    },
+    "/network/{network}": {
+      "get": {
+        "summary": "Get the details of a specific network",
+        "parameters": [
+          {
+            "name": "network",
+            "in": "path",
+            "description": "The network name (e.g. polygon)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The network asset details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Network"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Permission denied"
+          }
+        },
+        "security": [
+          {
+            "map3_auth": [
+              "asset-read"
+            ]
+          }
+        ]
+      }
+    },
+    "/network/{network}/{address}": {
+      "get": {
+        "summary": "Get the details of a specific asset on a network.",
+        "parameters": [
+          {
+            "name": "network",
+            "in": "path",
+            "description": "The network name (e.g. polygon)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "address",
+            "in": "path",
+            "description": "The address of the asset on the given network",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The asset details on the given network",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Permission denied"
+          }
+        },
+        "security": [
+          {
+            "map3_auth": [
+              "asset-read"
+            ]
+          }
+        ]
+      }
+    },
+    "/asset/{id}": {
+      "get": {
+        "summary": "Get the details of an asset by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique asset id on the map3 database",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The asset details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Permission denied"
+          }
+        },
+        "security": [
+          {
+            "map3_auth": [
+              "asset-read"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Network": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAsset"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "identifiers": {
+                "$ref": "#/components/schemas/Network_identifiers"
+              },
+              "regex": {
+                "$ref": "#/components/schemas/Network_regex"
+              }
+            }
+          }
+        ]
+      },
+      "Asset": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAsset"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string"
+              },
+              "mapping": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Mapping"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "BaseAsset": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "network",
+              "asset"
+            ]
+          },
+          "networkId": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "color": {
+            "type": "string"
+          },
+          "decimals": {
+            "type": "number"
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Description"
+            }
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Link"
+            }
+          },
+          "logos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Logo"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "spam": {
+            "type": "boolean"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          },
+          "verifications": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Verification"
+              }
+            }
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "Description": {
+        "type": "object",
+        "properties": {
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en",
+              "es",
+              "fr",
+              "de",
+              "it",
+              "ja",
+              "ko",
+              "pt",
+              "ru",
+              "zh"
+            ]
+          },
+          "value": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Link": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "explorer",
+              "research",
+              "website",
+              "github",
+              "medium",
+              "twitter",
+              "reddit",
+              "whitepaper"
+            ]
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "Logo": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string",
+            "enum": [
+              "svg",
+              "png"
+            ]
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "Tag": {
+        "type": "string",
+        "enum": [
+          "stablecoin",
+          "staking",
+          "wrapped",
+          "leveraged",
+          "bull",
+          "bear"
+        ]
+      },
+      "Verification": {
+        "type": "object",
+        "properties": {
+          "verified": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "proof": {
+            "$ref": "#/components/schemas/VerificationProof"
+          }
+        }
+      },
+      "Mapping": {
+        "type": "object",
+        "properties": {
+          "networkId": {
+            "type": "string",
+            "description": "The network id"
+          },
+          "assetId": {
+            "type": "string",
+            "description": "The asset id on the other network"
+          }
+        }
+      },
+      "VerificationProof": {
+        "type": "object",
+        "properties": {
+          "signature": {
+            "type": "string"
+          },
+          "assertion": {
+            "type": "string"
+          }
+        }
+      },
+      "inline_response_200": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "created_date": {
+            "type": "string"
+          }
+        }
+      },
+      "Network_identifiers": {
+        "type": "object",
+        "properties": {
+          "bip44": {
+            "type": "number"
+          },
+          "chainId": {
+            "type": "number"
+          }
+        },
+        "example": null
+      },
+      "Network_regex": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "memo": {
+            "type": "string"
+          }
+        },
+        "example": null
+      }
+    },
+    "securitySchemes": {
+      "map3_auth": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://api.map3.xyz/oauth/authorize",
+            "tokenUrl": "https://api.map3.xyz/oauth/token",
+            "scopes": {
+              "asset-read": "Grants read access to assets",
+              "asset-write": "Grants write access to assets",
+              "asset-admin": "Grants admin access"
+            }
+          }
+        }
+      }
+    }
+  }
+}
