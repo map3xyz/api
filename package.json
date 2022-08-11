@@ -7,6 +7,5 @@
   "workspaces": [
     "docs",
     "app"
-  ],
-  "packageManager": "yarn@3.2.2"
+  ]
 }
