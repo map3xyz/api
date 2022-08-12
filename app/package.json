@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "ts-node srv/server.ts",
-    "update": "ts-node src/util/assetdb.ts"
+    "start": "ts-node ./src/server.ts",
+    "update": "ts-node ./src/util/update.ts"
   },
   "license": "MIT",
   "dependencies": {

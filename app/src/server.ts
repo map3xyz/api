@@ -1,29 +1,27 @@
+import dotenv from "dotenv";
 import express from "express";
+import { getAssetById, getAssetByNetworkAndId } from "./api/asset";
+import { getNetworkById, getNetworks } from "./api/network";
+
 const app = express();
 const router = express.Router();
 
-router.get("/v1/network", (req, res) => {
-  res.status(200).json({ status: "/v1/network - Not yet implemented" });
+dotenv.config();
+
+router.get("/v1/network", async (req, res) => {
+  return getNetworks(req, res);
 });
 
-router.get("/v1/network/:id", (req, res) => {
-  res.status(200).json({ status: "/v1/network/:id - Not yet implemented" });
+router.get("/v1/network/:id", async (req, res) => {
+  return getNetworkById(req, res);
 });
 
-router.get("/v1/network/:networkId", (req, res) => {
-  res.status(200).json({ status: "/v1/network/:networkId - Not yet implemented" });
+router.get("/v1/network/:networkId/asset/:assetId", async (req, res) => {
+  return getAssetByNetworkAndId(req, res);
 });
 
-router.get("/v1/network/:networkId/asset/:assetId", (req, res) => {
-  res.status(200).json({
-    status: "/v1/network/:networkId/asset/:assetId - Not yet implemented",
-  });
-});
-
-router.get("/v1/asset/:id", (req, res) => {
-  res.status(200).json({
-    status: "/v1/asset/:id - Not yet implemented",
-  });
+router.get("/v1/asset/:id", async (req, res) => {
+  return getAssetById(req, res);
 });
 
 app.use("/api", router);
