@@ -18,11 +18,10 @@ async function getLatestRelease(): Promise<string> {
   const exists = await doesAssetDbExist(release.data.tag_name);
 
   if (!exists) {
-    const decoder = new StringDecoder("utf8");
     const file = await createWriteStream(ASSET_DB_DIR + "/" + release.data.tag_name);
     const response = await fetch(release.data.assets[0].browser_download_url);
-    const body = await response.text();
-    file.write(decoder.end(body));
+    const body = await response.arrayBuffer();
+    file.write(Buffer.from(body));
     file.close();
 
     const latest = await createWriteStream(ASSET_DB_DIR + "/LATEST_ID");
