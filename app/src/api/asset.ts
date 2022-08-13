@@ -1,37 +1,30 @@
 import { Request, Response } from "express";
 import { getConnection } from "../lib/db";
 
-export async function getAssetById(req: Request, res: Response): Promise<void> {
-  const { id } = req.params;
+export async function queryAssets(req: Request, res: Response): Promise<void> {
+  const { id, network_code, address } = req.query;
   const db = await getConnection();
+  let query: string;
+  let params: any = {};
 
-  const asset = await db.get("SELECT asset_data FROM asset WHERE id=$id", {
-    $id: id,
-  });
-
-  if (asset) {
-    res.status(200).json(JSON.parse(asset.asset_data));
+  if (id) {
+    query = "SELECT asset_data FROM asset WHERE id=$id";
+    params = { $id: id };
+  } else if (network_code && address) {
+    query =
+      "SELECT asset_data FROM asset ass, network net " +
+      "WHERE net.network_code=$network_code " +
+      "AND ass.network_id = net.id " +
+      "AND ass.address = $address";
+    params = { $network_code: network_code, $address: address };
   } else {
-    res.status(404);
+    res.status(400);
+    res.json({ error: "id or network_code and address must be specified when querying assets" });
+    return Promise.resolve();
   }
 
-  return Promise.resolve();
-}
-
-export async function getAssetByNetworkAndId(req: Request, res: Response): Promise<void> {
-  const { networkId, assetId } = req.params;
-  const db = await getConnection();
-
-  const asset = await db.get("SELECT asset_data FROM asset WHERE network_id=$network_id AND id=$asset_id", {
-    $network_id: networkId,
-    $asset_id: assetId,
-  });
-
-  if (asset) {
-    res.status(200).json(JSON.parse(asset.asset_data));
-  } else {
-    res.status(404);
-  }
+  const assets = await db.all(query, params);
+  res.status(200).json(assets.map((asset) => JSON.parse(asset.asset_data)));
 
   return Promise.resolve();
 }
