@@ -1,8 +1,8 @@
+import { existsSync } from "fs";
 import "isomorphic-fetch";
 import { createWriteStream } from "node:fs";
-import { mkdir, open } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 import { Octokit } from "octokit";
-const { StringDecoder } = require("node:string_decoder");
 
 const ASSET_REPO_OWNER = "map3xyz";
 const ASSET_REPO_NAME = "assets";
@@ -10,8 +10,7 @@ const ASSET_DB_DIR = "/tmp/assetdb";
 
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
-getLatestRelease().then((res) => console.log(res));
-console.log("Done");
+getLatestRelease().then((release) => console.log(`Done - ${release}`));
 
 async function getLatestRelease(): Promise<string> {
   const release = await octokit.rest.repos.getLatestRelease({ owner: ASSET_REPO_OWNER, repo: ASSET_REPO_NAME });
@@ -33,14 +32,11 @@ async function getLatestRelease(): Promise<string> {
 }
 
 async function doesAssetDbExist(tagName: string): Promise<boolean> {
-  let dbExists = false;
+  if (!existsSync(ASSET_DB_DIR)) {
+    await mkdir(ASSET_DB_DIR);
+  }
 
-  try {
-    const dir = await mkdir(ASSET_DB_DIR);
-    const file = await open(ASSET_DB_DIR + "/" + tagName, "ro");
-    dbExists = true;
-  } catch (err: any) {}
-
+  const dbExists = existsSync(ASSET_DB_DIR + "/" + tagName);
   return Promise.resolve(dbExists);
 }
 
