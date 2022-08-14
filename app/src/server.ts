@@ -16,8 +16,8 @@ router.get("/v1/asset", async (req, res) => {
   return queryAssets(req, res);
 });
 
-app.use("/api", router);
+app.use("/", router);
 
 console.log("Starting API server on port: 3002");
-app.listen(3002);
+app.listen(3002, "127.0.0.1");
 
