@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { PromisedDatabase } from "promised-sqlite3";
 
 export async function getConnection(
-  assetDbDir: string = process.env.ASSET_DB_DIR as string
+  assetDbDir: string = process.env.ASSETDB_DIR as string
 ): Promise<PromisedDatabase> {
   const filename = await getDbLocation(assetDbDir);
 
