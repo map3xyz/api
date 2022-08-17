@@ -1,5 +1,5 @@
 #!/bin/bash
 #
 
-rsync -avz --delete --exclude .git --exclude node_modules  --exclude app/node_modules --exclude app/.env . map3api@api.map3.xyz:api
+rsync -avz --delete --exclude .git --exclude node_modules  --exclude app/node_modules --exclude app/.env.* . map3api@api.map3.xyz:api
 ssh map3api@api.map3.xyz /home/map3api/bin/redeploy
