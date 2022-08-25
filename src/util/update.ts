@@ -2,38 +2,37 @@ import dotenv from "dotenv";
 import { existsSync } from "fs";
 import "isomorphic-fetch";
 import { createWriteStream } from "node:fs";
-import { Octokit } from "octokit";
-
-const ASSET_REPO_OWNER = "map3xyz";
-const ASSET_REPO_NAME = "assets";
+import { ASSETDB_DIR } from "./config";
+import { log } from "../lib/telemetry";
 
 dotenv.config();
-
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
 getLatestRelease().then((release) => console.log(`Done - ${release}`));
 
 async function getLatestRelease(): Promise<string> {
-  const release = await octokit.rest.repos.getLatestRelease({ owner: ASSET_REPO_OWNER, repo: ASSET_REPO_NAME });
-  const exists = await doesAssetDbExist(release.data.tag_name);
+  const release = await fetch('https://api.github.com/repos/map3xyz/assets/releases/latest').then(res => res.json());
+  const exists = await doesAssetDbExist(release.tag_name);
 
   if (!exists) {
-    const file = await createWriteStream(process.env.ASSETDB_DIR + "/" + release.data.tag_name);
-    const response = await fetch(release.data.assets[0].browser_download_url);
+    const file = await createWriteStream(ASSETDB_DIR + "/" + release.tag_name);
+    
+    const response = await fetch(release.assets[0].browser_download_url);
     const body = await response.arrayBuffer();
     file.write(Buffer.from(body));
     file.close();
 
-    const latest = await createWriteStream(process.env.ASSETDB_DIR + "/LATEST_ID");
-    latest.write(release.data.tag_name);
+    const latest = await createWriteStream(ASSETDB_DIR + "/LATEST_ID");
+    latest.write(release.tag_name);
     latest.close();
+
+    log('db_download', release.tag_name);
   }
 
-  return Promise.resolve(release.data.tag_name);
+  return Promise.resolve(release.tag_name);
 }
 
 async function doesAssetDbExist(tagName: string): Promise<boolean> {
-  const dbExists = existsSync(process.env.ASSETDB_DIR + "/" + tagName);
+  const dbExists = existsSync(ASSETDB_DIR + "/" + tagName);
   return Promise.resolve(dbExists);
 }
 
