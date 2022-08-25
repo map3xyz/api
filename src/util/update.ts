@@ -2,8 +2,8 @@ import dotenv from "dotenv";
 import { existsSync } from "fs";
 import "isomorphic-fetch";
 import { createWriteStream } from "node:fs";
-import { track } from '@map3xyz/telemetry'
 import { ASSETDB_DIR } from "./config";
+import { log } from "../lib/telemetry";
 
 dotenv.config();
 
@@ -25,7 +25,7 @@ async function getLatestRelease(): Promise<string> {
     latest.write(release.tag_name);
     latest.close();
 
-    track('api', 'oss', 'db_download', release.tag_name)
+    log('db_download', release.tag_name);
   }
 
   return Promise.resolve(release.tag_name);
