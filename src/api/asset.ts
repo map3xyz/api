@@ -23,8 +23,12 @@ export async function queryAssets(req: Request, res: Response): Promise<void> {
     return Promise.resolve();
   }
 
-  const assets = await db.all(query, params);
-  res.status(200).json(assets.map((asset) => JSON.parse(asset.asset_data)));
+  const asset = await db.get(query, params);
+  if (asset) {
+    res.status(200).json(JSON.parse(asset.asset_data));
+  } else {
+    res.status(404).end();
+  }
 
   return Promise.resolve();
 }
