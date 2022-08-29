@@ -5,8 +5,14 @@ import { authenticateToken } from "./lib/auth";
 import { getConnection } from "./lib/db";
 import { log } from "./lib/telemetry";
 import { SERVER_PORT } from "./util/config";
+import { scheduleUpdates } from "./util/update";
 const app = express();
 const router = express.Router();
+
+//
+// Schedule asset database updates
+//
+scheduleUpdates();
 
 router.get("/v1/network", authenticateToken, async (req, res) => {
   return queryNetworks(req, res);

@@ -6,6 +6,12 @@ import { ASSETDB_DIR } from "./config";
 
 getLatestRelease().then((release) => console.log(`Done - ${release}`));
 
+const EVERY_HOUR = 15 * 60 * 1000;
+
+export function scheduleUpdates(interval: number = EVERY_HOUR) {
+  setInterval(() => getLatestRelease().then((release) => console.log(`Done - ${release}`)), interval);
+}
+
 async function getLatestRelease(): Promise<string> {
   const release = await fetch("https://api.github.com/repos/map3xyz/assets/releases/latest").then((res) => res.json());
   const exists = await doesAssetDbExist(release.tag_name);
