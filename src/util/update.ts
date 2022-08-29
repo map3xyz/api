@@ -6,7 +6,7 @@ import { ASSETDB_DIR } from "./config";
 
 getLatestRelease().then((release) => console.log(`Done - ${release}`));
 
-const EVERY_HOUR = 15 * 60 * 1000;
+const EVERY_HOUR = 60 * 60 * 1000;
 
 export function scheduleUpdates(interval: number = EVERY_HOUR) {
   setInterval(() => getLatestRelease().then((release) => console.log(`Done - ${release}`)), interval);
