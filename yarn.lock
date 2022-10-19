@@ -39,10 +39,10 @@
   dependencies:
     "@lukeed/csprng" "^1.0.0"
 
-"@map3xyz/telemetry@^0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@map3xyz/telemetry/-/telemetry-0.0.9.tgz#551be42dad52ba3dd7d21914f6887a0e0866be94"
-  integrity sha512-Qon89mpMMLn5r85kQSVz1G1ymjP17cl7GgPFSmmRJBJv0+doZ3YdG1FzlrrUyQrTTlrulgUiKKO1xwQTalTaGA==
+"@map3xyz/telemetry@^0.0.12":
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/@map3xyz/telemetry/-/telemetry-0.0.12.tgz#0cf825ef08473063984fb093798a1888273d1fee"
+  integrity sha512-YMBDmOkCSiEOtxWX8rpuTntVoMhYmlWJPHhSd0wVpe0SK0F8XWeGX8wi0GPV06m6godUd+6v0LyubKJPBMXhoA==
   dependencies:
     "@lukeed/uuid" "^2.0.0"
     axios "^0.27.2"
