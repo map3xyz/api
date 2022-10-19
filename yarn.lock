@@ -39,10 +39,10 @@
   dependencies:
     "@lukeed/csprng" "^1.0.0"
 
-"@map3xyz/telemetry@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@map3xyz/telemetry/-/telemetry-0.0.4.tgz#2d63a952173f7f0c116235f2b93e3749b3cf1c60"
-  integrity sha512-q3JClEkuPaHhBoHbFj72x2h2C1AGz1Ws7qYOtMfkYuOFZbg5ugAmJGtpcSiPH2GVov93iU6ePd9VrKiZdbs+GA==
+"@map3xyz/telemetry@^0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@map3xyz/telemetry/-/telemetry-0.0.9.tgz#551be42dad52ba3dd7d21914f6887a0e0866be94"
+  integrity sha512-Qon89mpMMLn5r85kQSVz1G1ymjP17cl7GgPFSmmRJBJv0+doZ3YdG1FzlrrUyQrTTlrulgUiKKO1xwQTalTaGA==
   dependencies:
     "@lukeed/uuid" "^2.0.0"
     axios "^0.27.2"
@@ -490,9 +490,9 @@ finalhandler@1.2.0:
     unpipe "~1.0.0"
 
 follow-redirects@^1.14.9:
-  version "1.15.1"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.1.tgz#0ca6a452306c9b276e4d3127483e29575e207ad5"
-  integrity sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==
+  version "1.15.2"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
+  integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
 
 form-data@^3.0.0:
   version "3.0.1"
