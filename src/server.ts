@@ -22,6 +22,10 @@ router.get("/v1/asset", authenticateToken, async (req, res) => {
   return queryAssets(req, res);
 });
 
+router.get("/v1/stats", authenticateToken, async (req, res) => {
+  return getStats(req, res);
+});
+
 app.use("/", router);
 
 getConnection()
