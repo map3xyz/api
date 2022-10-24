@@ -1,6 +1,7 @@
 import express from "express";
 import { queryAssets } from "./api/asset";
 import { queryNetworks } from "./api/network";
+import { queryStats } from "./api/stats";
 import { authenticateToken } from "./lib/auth";
 import { getConnection } from "./lib/db";
 import { log } from "./lib/telemetry";
@@ -23,7 +24,7 @@ router.get("/v1/asset", authenticateToken, async (req, res) => {
 });
 
 router.get("/v1/stats", authenticateToken, async (req, res) => {
-  return getStats(req, res);
+  return queryStats(req, res);
 });
 
 app.use("/", router);
