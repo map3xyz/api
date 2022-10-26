@@ -14,7 +14,7 @@ export async function queryAssets(req: Request, res: Response): Promise<void> {
     query =
       "SELECT asset_data FROM asset ass, network net " +
       "WHERE net.network_code=$network_code " +
-      "AND ass.network_id = net.id " +
+      "AND ass.network_code = net.network_code " +
       "AND ass.address = $address";
     params = { $network_code: network_code, $address: address };
   } else {
