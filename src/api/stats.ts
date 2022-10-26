@@ -20,7 +20,7 @@ export async function queryStats(req: Request, res: Response): Promise<void> {
 
   let networks = await db.all('SELECT * FROM network');
 
-  let networksWithAssets = await db.all('SELECT distinct n.network_code FROM asset a, network n WHERE address IS NOT NULL AND a.network_id = n.id');
+  let networksWithAssets = await db.all('SELECT distinct n.network_code FROM asset a, network n WHERE address IS NOT NULL AND a.network_code = n.network_code');
 
   networksWithAssets = networksWithAssets.map((network) => network.network_code);
 
