@@ -32,7 +32,7 @@ export async function queryStats(req: Request, res: Response): Promise<void> {
         features: {
             assets: networksWithAssets.some(n => n === network.network_code),
             sdk: network_data.identifiers?.chainId !== undefined || sdkNetworkCodes.some((n) => n === network.network_code),
-            keyChain: network_data.identifiers?.chainId !== undefined || keychainNetworkCodes.some((n) => n === network.network_code)
+            key_chain: network_data.identifiers?.chainId !== undefined || keychainNetworkCodes.some((n) => n === network.network_code)
         },
         identifiers: network_data.identifiers
     }
