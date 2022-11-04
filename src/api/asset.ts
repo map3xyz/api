@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { getConnection } from "../lib/db";
+import { formatMapsResponse } from "../lib/maps";
 
 export async function queryAssets(req: Request, res: Response): Promise<void> {
   const { id, network_code, address } = req.query;
@@ -37,29 +38,7 @@ export async function queryAssets(req: Request, res: Response): Promise<void> {
   const maps = await db.all(query, params);
 
   if(maps && maps.length > 0) {
-    const networkCodes = [...new Set(maps.map((map: any) => map.from_network))].sort();
-    const networks: {[networkCode: string]: string[]} = {};
-
-    for(const networkCode of networkCodes) {
-      const networkAddresses = maps
-        .filter((map: any) => map.from_network === networkCode)
-        .map((map: any) => map.from_address);
-
-      networks[networkCode + ''] = networkAddresses;
-    }
-    asset.asset_data.networks = networks;
-
-    const types = [...new Set(maps.map((map: any) => map.type))].sort();
-    const organizedMaps: {[type: string]: any[]} = {};
-
-    for(const type of types) {
-      const typeMaps = maps
-        .filter((map: any) => map.type === type)
-        .map((map: any) => JSON.parse(map.data));
-
-      organizedMaps[type + ''] = typeMaps;
-    }
-    asset.asset_data.maps = organizedMaps; 
+    asset.asset_data = formatMapsResponse(asset.asset_data, maps);
   }
 
   res.status(200).json(asset.asset_data);
