@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { getConnection } from "../lib/db";
+import { formatMapsResponse } from "../lib/maps";
 
 export async function queryAssets(req: Request, res: Response): Promise<void> {
   const { id, network_code, address } = req.query;
@@ -24,11 +25,23 @@ export async function queryAssets(req: Request, res: Response): Promise<void> {
   }
 
   const asset = await db.get(query, params);
-  if (asset) {
-    res.status(200).json(JSON.parse(asset.asset_data));
-  } else {
+
+  if(!asset) {
     res.status(404).end();
   }
+
+  asset.asset_data = JSON.parse(asset.asset_data);
+
+  query = "SELECT * FROM asset_map WHERE to_network=$to_network AND to_address=$to_address";
+  params = { $to_network: asset.asset_data.networkCode, $to_address: asset.asset_data.address };
+
+  const maps = await db.all(query, params);
+
+  if(maps && maps.length > 0) {
+    asset.asset_data = formatMapsResponse(asset.asset_data, maps);
+  }
+
+  res.status(200).json(asset.asset_data);
 
   return Promise.resolve();
 }
