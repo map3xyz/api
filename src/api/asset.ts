@@ -32,8 +32,35 @@ export async function queryAssets(req: Request, res: Response): Promise<void> {
 
   asset.asset_data = JSON.parse(asset.asset_data);
 
-  query = "SELECT * FROM asset_map WHERE to_network=$to_network AND to_address=$to_address";
-  params = { $to_network: asset.asset_data.networkCode, $to_address: asset.asset_data.address };
+  query = `
+  with recursive maps as (
+    select 
+      id, 
+      null as mapped 
+    from 
+      asset 
+    where 
+      id = $id 
+    union 
+    select 
+      n.id, 
+      case when e.to_id = n.id then e.from_id else e.to_id end as mapped 
+    from 
+      maps n 
+      join asset_map e on n.id = e.from_id 
+      OR n.id = e.to_id
+  ) 
+  select 
+    address, 
+    network_code as networkCode 
+  from 
+    maps, 
+    asset 
+  where 
+    mapped is not null 
+    and asset.id = maps.mapped
+  `;
+  params = { $id: id };
 
   const maps = await db.all(query, params);
 
