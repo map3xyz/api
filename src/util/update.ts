@@ -6,9 +6,9 @@ import { ASSETDB_DIR } from "./config";
 
 getLatestRelease().then((release) => console.log(`Done - ${release}`));
 
-const EVERY_MINUTE = 60 * 1000;
+const EVERY_FIVE_MINUTES = 60 * 1000 * 5;
 
-export function scheduleUpdates(interval: number = EVERY_MINUTE) {
+export function scheduleUpdates(interval: number = EVERY_FIVE_MINUTES) {
   setInterval(() => getLatestRelease().then((release) => console.log(`Done - ${release}`)), interval);
 }
 
